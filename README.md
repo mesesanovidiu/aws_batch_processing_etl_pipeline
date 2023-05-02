@@ -57,8 +57,7 @@ Amazon Redshift: Redshift is Amazon's analytics database, and is designed to cru
 -- To be completed --
 
 # Demo
-- You could add a demo video here
-- Or link to your presentation video of the project
+-- To be completed --
 
 # Conclusion
 Through the completion of this data engineering project, I have gained experience in the utilization of fundamental AWS services, including S3 and Redshift. This hands-on experience has enabled me to develop a deeper understanding of the AWS infrastructure and its capabilities for processing large-scale datasets. As a result of this project, I have gained the confidence and competence to effectively execute future data engineering projects within the AWS ecosystem.
