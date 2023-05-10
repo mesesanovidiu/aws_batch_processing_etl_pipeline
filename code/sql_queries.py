@@ -230,7 +230,7 @@ create_table_fact_sales = """
             AND st.customer_name = dc.customer_name
             AND st.city = dc.city
             AND st.country = dc.country
-            AND CASE WHEN ss.territory = '' THEN 'not specified' ELSE ss.territory END as territory = dc.territory
+            AND CASE WHEN st.territory = '' THEN 'not specified' ELSE st.territory END = dc.territory
             AND st.contact_lastname = dc.contact_lastname
             AND st.contact_firstname = dc.contact_firstname
 	LEFT JOIN dim_status ds

@@ -29,9 +29,9 @@ redshift_conn = psycopg2.connect(
     password=redshift_password
 )
 
-# Define the S3 key (object name) for the file
+# Define the S3 key for the file
 s3_staging_key = f'staging/raw_sales_{date.today()}'
-# Define the S3 key (object name) for the transformed file
+# Define the S3 key for the transformed file
 transformed_s3_key = f'transformed/sales_{date.today()}'
 
 # Define Redshif cursor
@@ -48,70 +48,70 @@ def extract_data_to_staging():
 
 extract_data_to_staging()
 
-def transform_data():
-    # Get the file from S3
-    response = s3_client.get_object(Bucket=s3_bucket_name, Key=s3_staging_key)
-    csv_file = response['Body']
-    df = pd.read_csv(csv_file)
+# def transform_data():
+#     # Get the file from S3
+#     response = s3_client.get_object(Bucket=s3_bucket_name, Key=s3_staging_key)
+#     csv_file = response['Body']
+#     df = pd.read_csv(csv_file)
 
-    # Convert orderdate and shipdate columns to date format
-    df['ORDERDATE'] = pd.to_datetime(df['ORDERDATE'], format="%Y-%m-%d")
-    df['SHIPDATE'] = pd.to_datetime(df['SHIPDATE'], format="%Y-%m-%d")
+#     # Convert orderdate and shipdate columns to date format
+#     df['ORDERDATE'] = pd.to_datetime(df['ORDERDATE'], format="%Y-%m-%d")
+#     df['SHIPDATE'] = pd.to_datetime(df['SHIPDATE'], format="%Y-%m-%d")
 
-    df = df.rename(columns={'MSRP': 'suggested_retail_price'})
+#     df = df.rename(columns={'MSRP': 'suggested_retail_price'})
 
-    # Convert the DataFrame to a binary string and upload it to S3
-    csv_file = df.to_csv(index=False)
-    s3_client.put_object(Body=csv_file, Bucket=s3_bucket_name, Key=transformed_s3_key)
+#     # Convert the DataFrame to a binary string and upload it to S3
+#     csv_file = df.to_csv(index=False)
+#     s3_client.put_object(Body=csv_file, Bucket=s3_bucket_name, Key=transformed_s3_key)
 
-    print(f"Transformed file uploaded to s3://{s3_bucket_name}/{transformed_s3_key}")
+#     print(f"Transformed file uploaded to s3://{s3_bucket_name}/{transformed_s3_key}")
 
-transform_data()
+# transform_data()
 
-def create_tables_in_redshift():
-    redshift_cursor.execute(create_sales_staging_table)
-    redshift_cursor.execute(create_table_dim_products)
-    redshift_cursor.execute(create_table_dim_customers)
-    redshift_cursor.execute(create_table_dim_date)
-    redshift_cursor.execute(create_table_dim_status)
+# def create_tables_in_redshift():
+#     redshift_cursor.execute(create_sales_staging_table)
+#     redshift_cursor.execute(create_table_dim_products)
+#     redshift_cursor.execute(create_table_dim_customers)
+#     redshift_cursor.execute(create_table_dim_date)
+#     redshift_cursor.execute(create_table_dim_status)
 
-    redshift_conn.commit()
-    print(f"Table created in Redshift")
+#     redshift_conn.commit()
+#     print(f"Table created in Redshift")
 
-create_tables_in_redshift()
+# create_tables_in_redshift()
 
-def transfer_data_to_redshift():
-    s3_key = f'staging/raw_sales_{date.today()}'
-    redshift_cursor = redshift_conn.cursor()
-    copy_query = f"""
-        COPY staging_sales
-        FROM 's3://{s3_bucket_name}/{s3_key}'
-        ACCESS_KEY_ID '{aws_access_key_id}'
-        SECRET_ACCESS_KEY '{aws_secret_access_key}'
-        CSV
-        IGNOREHEADER 1
-        """
-    redshift_cursor.execute(copy_query)
-    redshift_conn.commit()
-    print(f"Data copied to Redshift table sales_staging")
+# def transfer_data_to_redshift():
+#     s3_key = f'staging/raw_sales_{date.today()}'
+#     redshift_cursor = redshift_conn.cursor()
+#     copy_query = f"""
+#         COPY staging_sales
+#         FROM 's3://{s3_bucket_name}/{s3_key}'
+#         ACCESS_KEY_ID '{aws_access_key_id}'
+#         SECRET_ACCESS_KEY '{aws_secret_access_key}'
+#         CSV
+#         IGNOREHEADER 1
+#         """
+#     redshift_cursor.execute(copy_query)
+#     redshift_conn.commit()
+#     print(f"Data copied to Redshift table sales_staging")
 
-transfer_data_to_redshift()
+# transfer_data_to_redshift()
 
-def update_dimension_tables():   
-    redshift_cursor.execute(update_dim_products)
-    redshift_cursor.execute(update_dim_customers)
-    redshift_cursor.execute(update_dim_date)
-    redshift_cursor.execute(update_dim_status)
-    redshift_conn.commit()
-    print(f"Dimension tables updated in Redshift")
+# def update_dimension_tables():   
+#     redshift_cursor.execute(update_dim_products)
+#     redshift_cursor.execute(update_dim_customers)
+#     redshift_cursor.execute(update_dim_date)
+#     redshift_cursor.execute(update_dim_status)
+#     redshift_conn.commit()
+#     print(f"Dimension tables updated in Redshift")
 
-update_dimension_tables()
+# update_dimension_tables()
 
-def update_fact_tables():
-    redshift_cursor.execute(create_table_fact_sales)
-    redshift_cursor.execute(add_foreign_key_constraints)
+# def update_fact_tables():
+#     redshift_cursor.execute(create_table_fact_sales)
+#     redshift_cursor.execute(add_foreign_key_constraints)
 
-    redshift_conn.commit()
-    print(f"Fact tables updated in Redshift")
+#     redshift_conn.commit()
+#     print(f"Fact tables updated in Redshift")
 
-update_fact_tables()
+# update_fact_tables()
