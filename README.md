@@ -8,6 +8,7 @@ The goal of this project is to build a batch data processing pipeline that extra
 - Build and understand a data processing framework in AWS used for batch data loading;
 - Setup and understand cloud components involved in data batch processing (S3, Redshift);
 - Understand how to approach or build an data processing pipeline from the ground up;
+- Understand how to create a data warehouse using a star schema model;
 - Understand how to track changes in dimension tables using SCD type 2;
 
 # Contents
